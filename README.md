@@ -1,8 +1,8 @@
-## Hi eh699-er553-md2265!
+## Hi eys39-ns976!
 
 This is the `main` branch - use this for collaborating on code and be sure to add all the code you developed for your final project here. We will download everything upon the deadline.
 
 ## Your page
 
-The project web-pages will also be hosted on github in this repo in the `page` branch. You can edit it by switching branches and modifying the files, or by pushing to the branch. Here is a link to a minimal web-page that you can use as a starting point:[https://pages.github.coecis.cornell.edu/ece3140-spr2026/eh699-er553-md2265/](https://pages.github.coecis.cornell.edu/ece3140-spr2026/eh699-er553-md2265/).
+The project web-pages will also be hosted on github in this repo in the `page` branch. You can edit it by switching branches and modifying the files, or by pushing to the branch. Here is a link to a minimal web-page that you can use as a starting point:[https://pages.github.coecis.cornell.edu/ece3140-spr2026/eys39-ns976/](https://pages.github.coecis.cornell.edu/ece3140-spr2026/eys39-ns976/).
 
