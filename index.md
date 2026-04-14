@@ -4,33 +4,32 @@ You can modify this page to create your final project page. Right now, the page 
 
 The Markdown interface is easy, but if you would like to do something different you can add an index.html file to the branch (and any supporitng style sheets etc.) and it will be served as the webpage instead. 
 
-# Expected page structure 
+*Your website must have the following headlines (do not change them)*
 
-We would like your final project page to have the following structure:
-- A very catchy title
-- An overview section about the project
-- A system diagrm that shows the major hw/sw components and how they interact 
-- A short video (3-4 min) that covers:
-  - Who you are
-  - Project title and idea
-  - Technical approach
-  - A demo of the working product
-  - Any technical difficulties you faced or your testing/debugging approach. Think of what YOU would have liked to know BEFORE you started this project.
-  - _Please keep to the 3-4min lenght since we will ask students to watch a bunch of these. If you want a longer video that goes into more detail you can add anohter one in the technical section_. 
-- Technical approach (This should be more detailed than the information in the video)
-- Testing / debugging aproach
-- Team work (if applicable)
-- Outside resrouces
+# A very catchy title
 
-## The section headings we expct to see are (please do not change them):
+## Introduction 
+- Briefly describe what the system does. Include any necessary background information. Summarize what you accomplished, and what you learned along the way.
+- Please fill this in by the project check-in date (Apr 21st) 
 
-#### Overview (Fill in for web checkin April 30th)
-In addition to the text, this should have the video (not needed by April 30th) and the system diagram in it. You can embed an youtube video here. Please use a horizontal layout for the video if possible. 
-#### Technical Approach (Fill in for web checkin April 30th)
-Use pictures and diagram where appropriate. For the checkin we want a draft of this section, you are free to change it further. 
-#### Testing and Debugging
-Talk about your testing approach or subtle bugs you made/found.
-#### Team Work 
-How did you coordinate? Who was responsible for what? You can skip this section if you work alone. 
-#### Outside Resources 
-If you are using a code base from outside of class, or found a particular resource helpful, please put it here. Describe any use of generative AI tools here as well.
+## System Overview 
+- Include a flow chart/block diagram of the system, showing how components interact. This diagram could potentially be replaced by \textit{very} clear writing.
+- Please fill this in by the project check-in date (Apr 21st)  
+- Video: After the overview is a good place to embed the video. The video is not required by the check-in date. 
+
+## System Description 
+- Explain how your system/software works. This should be at an appropriate level of detail to allow us to evaluate design decisions. Feel free to include code snippets where appropriate. Projects with additional hardware must include a schematic.
+- Please upload a draft of this text/schematic by the project check-in date (Apr 21st) 
+
+## Testing 
+- Describe your testing procedure and how you determined that the system works correctly. Some projects may not have traditional test cases (e.g. tested the system by human interaction with it), but all projects must be tested. 
+
+## Resources
+- Cite the resources you used for this project. If this is based on another codebase, link it here. If you did not use any other code, please still include this section and state that you did everything from scratch. 
+
+## Work Distribution
+- Describe how you worked together, and who did what. If you encountered difficulties, then how did you deal with them?
+
+## AI Usage
+- Indicate if you used GenAI for help with this project (as a TA in compliance with the course restrictions of course), and how. 
+
