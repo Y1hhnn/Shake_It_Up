@@ -1,4 +1,4 @@
-# Your project ECE3140 page!
+# ECE3140 page for netid-netid!
 
 You can modify this page to create your final project page. Right now, the page is generated from a Markdown file (index.md) in the `page` branch. You can edit it directly from the git web interface or push it to the branch. There are a few [standard themes](https://pages.github.com/themes/) github provides. This one is `minimal`. If you'd like to change it, you can edit the `_config.yml` file.
 
