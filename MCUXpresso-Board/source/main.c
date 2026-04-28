@@ -1,7 +1,9 @@
+#include <stdio.h>
 #include "drivers/uart_comm.h"
 #include "drivers/mma8451.h"
+#include "drivers/timer_pit.h"
 #include "app/dsp_filter.h"
-#include <stdio.h>
+#include "app/game_logic.h"
 
 void short_delay(int loops)
 {
@@ -15,7 +17,7 @@ int main(void)
 {
     /* Initialize Hardware */
     init_uart();
-
+    PIT_Init();
     uart_puts("System Init... Checking I2C Accel...\n");
     if (ACCEL_Init() == 1)
     {
@@ -40,13 +42,18 @@ int main(void)
 
         if (rx_char == 'S')
         {
-            game_running = 1;
+            PIT_ResetTimer();
+        	game_running = 1;
             uart_puts("START!\n");
         }
         else if (rx_char == 'X')
         {
             game_running = 0;
             uart_puts("STOPPED!\n");
+        }
+        else if (rx_char == 'L' || rx_char == 'R' || rx_char == 'U' || rx_char == 'D')
+        {
+        	GL_SetTarget(rx_char, millis());
         }
 
         if (game_running)
@@ -56,8 +63,10 @@ int main(void)
                 char direction = DSP_DetectSwing(&accel_data);
                 if (direction != 0)
                 {
-                    char serial_msg[16];
-                    snprintf(serial_msg, sizeof(serial_msg), "HIT:P:%c\n", direction);
+                	uint32_t current_time = millis();
+                	char grade = GL_EvaluateSwing(current_time, direction);
+                	char serial_msg[32];
+                	snprintf(serial_msg, sizeof(serial_msg), "HIT:%c:%c:%lu\n", grade, direction, current_time);
                     uart_puts(serial_msg);
                 }
             }
