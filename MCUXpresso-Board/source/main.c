@@ -1,3 +1,5 @@
+#include "fsl_device_registers.h"
+#include "fsl_port.h"
 #include <stdio.h>
 #include "drivers/uart_comm.h"
 #include "drivers/mma8451.h"
@@ -15,6 +17,10 @@ void short_delay(int loops)
 
 int main(void)
 {
+	SIM->SCGC5 |= SIM_SCGC5_PORTA_MASK;   // Start Port A Clock
+    PORTA->PCR[1] = PORT_PCR_MUX(2);      // PTA1 -> ALT2 (UART0_RX)
+    PORTA->PCR[2] = PORT_PCR_MUX(2);      // PTA2 -> ALT2 (UART0_TX)
+
     /* Initialize Hardware */
     init_uart();
     PIT_Init();
@@ -68,6 +74,7 @@ int main(void)
                 	char serial_msg[32];
                 	snprintf(serial_msg, sizeof(serial_msg), "HIT:%c:%c:%lu\n", grade, direction, current_time);
                     uart_puts(serial_msg);
+                    short_delay(1000000);
                 }
             }
         }
