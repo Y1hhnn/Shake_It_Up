@@ -1,14 +1,11 @@
+#include "../board.h"
 #include "uart_comm.h"
-#include <pin_mux.h>
-#include <clock_config.h>
-#include <board.h>
+#include "fsl_device_registers.h"
+#include "fsl_common.h"
 #include <MKL46Z4.h>
-#include <fsl_debug_console.h>
 
 void init_uart(void) {
-    BOARD_InitBootPins();
-    BOARD_InitBootClocks();
-    BOARD_InitDebugConsole();
+	BOARD_InitHardware();
 }
 
 void uart_putc(char ch) {
