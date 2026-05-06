@@ -1,83 +1,88 @@
-#include "fsl_device_registers.h"
-#include "fsl_port.h"
 #include <stdio.h>
+#include <string.h>
+#include <stdint.h>
 #include "drivers/uart_comm.h"
 #include "drivers/mma8451.h"
 #include "drivers/timer_pit.h"
 #include "app/dsp_filter.h"
 #include "app/game_logic.h"
 
-void short_delay(int loops)
-{
-    for (int i = loops; i > 0; i--)
-    {
-        __asm("nop"); /* No Operation to prevent compiler optimization */
+#define LINE_BUF_SIZE 64
+
+static int s_accel_ok = 0;
+
+static void handle_line(const char *s) {
+    // SYN  -> ACK:<board_ms>
+    if (s[0] == 'S' && s[1] == 'Y' && s[2] == 'N' && s[3] == '\0') {
+        uint32_t t = millis();              // capture FIRST, before any TX work
+        char buf[24];
+        snprintf(buf, sizeof(buf), "ACK:%lu\n", (unsigned long)t);
+        uart_puts(buf);
+        return;
     }
+
+    // B:<idx>:<dir>:<t_ms>  ->  enqueue beat
+    if (s[0] == 'B' && s[1] == ':') {
+        unsigned int  idx_u;
+        char          dir;
+        unsigned long t_ms;
+        if (sscanf(s, "B:%u:%c:%lu", &idx_u, &dir, &t_ms) == 3 &&
+            idx_u <= 0xFFFFU &&
+            (dir == 'U' || dir == 'D' || dir == 'L' || dir == 'R')) {
+            GL_EnqueueBeat((uint16_t)idx_u, dir, (uint32_t)t_ms);
+        }
+        return;
+    }
+
+    // Anything else: silently ignored.
 }
 
-int main(void)
-{
-	SIM->SCGC5 |= SIM_SCGC5_PORTA_MASK;   // Start Port A Clock
-    PORTA->PCR[1] = PORT_PCR_MUX(2);      // PTA1 -> ALT2 (UART0_RX)
-    PORTA->PCR[2] = PORT_PCR_MUX(2);      // PTA2 -> ALT2 (UART0_TX)
-
-    /* Initialize Hardware */
+int main(void) {
     init_uart();
-    PIT_Init();
-    uart_puts("System Init... Checking I2C Accel...\n");
-    if (ACCEL_Init() == 1)
-    {
-        uart_puts("MMA8451Q Detected and Configured!\n");
-    }
-    else
-    {
-        uart_puts("ERROR: MMA8451Q Not Found!\n");
-        while (1)
-            ;
-    }
+    uart_puts("INIT:UART_OK\n");
 
-    int game_running = 0;
+    PIT_Init();
+    uart_puts("INIT:PIT_OK\n");
+
+    s_accel_ok = ACCEL_Init();
+    uart_puts(s_accel_ok ? "INIT:ACCEL_OK\n" : "INIT:ACCEL_FAIL\n");
+
+    GL_Init();
+    uart_puts("BOOT\n");
+
+    char    line_buf[LINE_BUF_SIZE];
+    uint8_t line_len = 0;
     SRAWDATA accel_data;
 
-    uart_puts("Board Ready. Waiting for START ('S')...\n");
-
-    while (1)
-    {
-        /* Poll UART for incoming commands */
-        char rx_char = uart_getc_nonblocking();
-
-        if (rx_char == 'S')
-        {
-            PIT_ResetTimer();
-        	game_running = 1;
-            uart_puts("START!\n");
-        }
-        else if (rx_char == 'X')
-        {
-            game_running = 0;
-            uart_puts("STOPPED!\n");
-        }
-        else if (rx_char == 'L' || rx_char == 'R' || rx_char == 'U' || rx_char == 'D')
-        {
-        	GL_SetTarget(rx_char, millis());
-        }
-
-        if (game_running)
-        {
-            if (ACCEL_getAccelDat(&accel_data) == 1)
-            {
-                char direction = DSP_DetectSwing(&accel_data);
-                if (direction != 0)
-                {
-                	uint32_t current_time = millis();
-                	char grade = GL_EvaluateSwing(current_time, direction);
-                	char serial_msg[32];
-                	snprintf(serial_msg, sizeof(serial_msg), "HIT:%c:%c:%lu\n", grade, direction, current_time);
-                    uart_puts(serial_msg);
-                    short_delay(1000000);
+    while (1) {
+        // 1. Drain UART RX ring buffer; dispatch on '\n' / '\r'.
+        char c;
+        while ((c = uart_getc_nonblocking()) != 0) {
+            if (c == '\n' || c == '\r') {
+                if (line_len > 0) {
+                    line_buf[line_len] = '\0';
+                    handle_line(line_buf);
+                    line_len = 0;
                 }
+            } else if (line_len < LINE_BUF_SIZE - 1) {
+                line_buf[line_len++] = (uint8_t)c;
+            } else {
+                line_len = 0;                   // overflow: drop and warn
+                uart_puts("ERR:overflow\n");
             }
         }
+
+        // 2. Read accel, run DSP, judge swings against queue head.
+        if (s_accel_ok && ACCEL_getAccelDat(&accel_data) == 1) {
+            char dir = DSP_DetectSwing(&accel_data);
+            if (dir != 0) {
+                GL_OnSwing(millis(), dir);
+            }
+        }
+
+        // 3. Auto-expire stale beats (emits M:idx for each).
+        GL_Tick(millis());
     }
+
     return 0;
 }

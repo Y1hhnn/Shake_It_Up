@@ -1,3 +1,8 @@
+/**
+ * @file dsp_filter.c
+ * @brief Accelerometer DSP logic for swing detection and direction classification.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "drivers/uart_comm.h"
@@ -12,7 +17,7 @@
 #define MAX_CAPTURE_SAMPLES 25
 
 #define DIRECTION_RATIO_NUM 10
-#define DIRECTION_RATIO_DEN 10
+#define DIRECTION_RATIO_DEN 7
 
 typedef enum
 {
@@ -30,7 +35,6 @@ static int32_t ema_z = 0;
 
 static int capture_count = 0;
 static int32_t peak_dynamic_sq = 0;
-
 static int32_t peak_xy_sq = 0;
 static int32_t peak_xy_x = 0;
 static int32_t peak_xy_y = 0;
@@ -110,10 +114,12 @@ char DSP_DetectSwing(SRAWDATA *data)
 
                 if (abs_x * DIRECTION_RATIO_DEN > abs_y * DIRECTION_RATIO_NUM)
                 {
+                    // X axis flipped for your board orientation
                     hit_direction = (peak_xy_x > 0) ? 'R' : 'L';
                 }
                 else if (abs_y * DIRECTION_RATIO_DEN > abs_x * DIRECTION_RATIO_NUM)
                 {
+                    // Y axis kept same
                     hit_direction = (peak_xy_y > 0) ? 'U' : 'D';
                 }
                 else
@@ -121,6 +127,7 @@ char DSP_DetectSwing(SRAWDATA *data)
                     hit_direction = 0;
                 }
             }
+
             cooldown_counter = DEBOUNCE_COOLDOWN;
             swing_state = SWING_COOLDOWN;
 

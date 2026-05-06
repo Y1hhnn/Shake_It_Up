@@ -178,8 +178,10 @@ int ACCEL_Init(void)
         return 0;
     if (!I2C_WriteAccelReg(MMA8451_I2C_ADDR, ACCEL_XYZ_DATA_CFG, 0x01))
         return 0;
+
     if (!I2C_WriteAccelReg(MMA8451_I2C_ADDR, ACCEL_CTRL_REG1, 0x0D))
         return 0;
+
     return 1;
 }
 
