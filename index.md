@@ -33,14 +33,34 @@ On the computer side, a Python program reads the incoming serial data and synchr
 - Please upload a draft of this text/schematic by the project check-in date (Apr 21st)  -->
 
 ## Testing 
-- Describe your testing procedure and how you determined that the system works correctly. Some projects may not have traditional test cases (e.g. tested the system by human interaction with it), but all projects must be tested. 
+
+### Accelerometer and Gesture Recognition
+* Print out raw X, Y, and Z acceleration values from the MMA8451Q sensor to the console to ensure data is being read correctly.
+* Test manual interaction by waving the board in four directions (Up, Down, Left, Right) to verify if the movements are distinguishable.
+* Adjust threshold parameters in the C code so that intentional waves are recognized while minor hand tremors or idle noise are filtered out.
+* Fine-tune the gesture detection logic to ensure a single wave is recognized as one distinct input instead of multiple rapid triggers.
+
+### Bluetooth Communication and Signal Stability
+* Verify successful pairing between the HC-06 Bluetooth module and the PC to establish a stable wireless data link.
+* Use the demo.ipynb environment to specifically test if "Up, Down, Left, Right" motions performed on the board are accurately captured over the Bluetooth connection.
+* Test the effective range of the Bluetooth signal to ensure player movements do not cause data packets to drop during active gameplay.
+* Monitor serial output on the Python side to evaluate any latency introduced by the wireless transmission compared to a wired UART connection.
+
+### Python and GUI: Interaction and Synchronization
+* Test the game's responsiveness by letting Python generate random directional signals (Up, Down, Left, Right) and manually performing the corresponding movements to check for sync.
+* Verify that the game's visual assets (up.png, down.png, left.png, right.png) and feedback sprites (perfect.png, good.png, miss.png) are loaded and displayed in the correct positions.
+* Test different gameplay scenarios (perfect, good, and miss) to ensure the score updates in real-time and the "Final Score" and "Max Combo" are displayed accurately upon exiting.
+* Confirm that the movement on the board and the animation on the screen are synchronized without noticeable latency, providing a smooth experience.
+
 
 ## Resources
 - Cite the resources you used for this project. If this is based on another codebase, link it here. If you did not use any other code, please still include this section and state that you did everything from scratch. 
 
 ## Work Distribution
-- Describe how you worked together, and who did what. If you encountered difficulties, then how did you deal with them?
+<!-- - Describe how you worked together, and who did what. If you encountered difficulties, then how did you deal with them? -->
+
+The initial planning and system architecture were completed collaboratively by both of us. While Yihan focused on developing the DSP filtering, MMA8451 driver, and the Python GUI, Felicia focused on the hardware connections, game logic firmware, and the Bluetooth HC-06 integration, we helped modify each other’s code and setup whenever one encountered a problem. We met frequently to debug and test the human interaction elements together. Each of us has a solid understanding of every aspect of the project and contributed an equal amount of work to the final system.
 
 ## AI Usage
-- Indicate if you used GenAI for help with this project (as a TA in compliance with the course restrictions of course), and how. 
+The initial planning and system architecture were completed collaboratively by both of us. While Yihan focused on developing the DSP filtering, MMA8451 driver, and the Python GUI, Felicia focused on the hardware connections, game logic firmware, and the Bluetooth HC-06 integration, we helped modify each other’s code and setup whenever one encountered a problem. We met frequently to debug and test the human interaction elements together. Each of us has a solid understanding of every aspect of the project and contributed an equal amount of work to the final system.
 
