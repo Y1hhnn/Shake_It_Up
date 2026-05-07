@@ -60,7 +60,7 @@ On the computer side, a Python program reads the incoming serial data and synchr
 
 
 ## Resources
-- Cite the resources you used for this project. If this is based on another codebase, link it here. If you did not use any other code, please still include this section and state that you did everything from scratch. 
+[Music Link Here](https://open.spotify.com/track/0vor7b1zPli7ROBMPPZzTp?si=14eb88aada3d448c)
 
 ## Work Distribution
 <!-- - Describe how you worked together, and who did what. If you encountered difficulties, then how did you deal with them? -->
