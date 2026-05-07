@@ -1,3 +1,8 @@
 remote_theme: pages-themes/minimal
 plugins:
 - jekyll-remote-theme # add this line to you plugin list if you are using a different setup
+
+markdown: kramdown
+kramdown:
+  math_engine: mathjax
+  syntax_highlighter: rouge

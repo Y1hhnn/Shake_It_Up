@@ -163,7 +163,7 @@ We tested each layer in isolation before integrating, then ran end-to-end play s
 
 ### Python and GUI: Interaction and Synchronization
 * Played the demo song end-to-end and confirmed each falling arrow lined up with its perfect time on the judgment line.
-* Cross-checked timing-judgment consistency by scheduling a single beat with a 3-second countdown, swinging at varying offsets, and confirming the board's reported P,G,M always matched the measured `|actual − target|` against the 500, 1000, 1500 ms thresholds.
+* Cross-checked timing-judgment consistency by scheduling a single beat with a 3-second countdown, swinging at varying offsets, and confirming the board's reported P,G,M always matched the measured $\abs{actual − target}$ against the 500, 1000, 1500 ms thresholds.
 * Verified the directional arrow images loaded into their correct screen lanes and the Perfect, Good, Miss feedback images displayed centered above the play area.
 * Tested all three grade outcomes by deliberately swinging on time, slightly off, and not at all. The score, combo, and per-grade tallies updated instantly and matched what the board reported.
 * Checked that the end-screen score, max combo, accuracy percentage, and rank letter (S,A,B,C,D by accuracy) reflected the actual play.
