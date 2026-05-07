@@ -12,6 +12,17 @@
 
 Our project implements a rhythm-based interactive game called “Shake It Up!” using the FRDM-KL46Z board. The system uses the onboard MMA8451Q accelerometer to track a player’s motion and determine whether their movements match the timing of a music track, providing feedback such as “PERFECT,” “GOOD,” or “MISS” through a Python interface on a computer. Inspired by games like Just Dance, we explored how a low-cost embedded system can perform motion sensing and basic gesture recognition without cameras or external sensors. The board handles real-time processing by sampling acceleration data via I2C, computing motion magnitude to detect deliberate movements, and sending processed results to the host computer over UART for visualization and scoring. We successfully built a working prototype that detects motion and synchronizes it with external feedback. Through this project, we learned how to integrate sensing, real-time processing, and communication in an embedded system, and gained experience debugging and organizing code across both embedded C and Python.
 
+[Check Our Video Here](https://youtube.com/shorts/vkBay1WjeI4)
+<div style="width:100%;height:0;position:relative;padding-bottom:64.923%;">
+  <iframe
+    src="https://youtube.com/embed/vkBay1WjeI4"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowfullscreen
+    style="width:100%;height:100%;position:absolute;left:0;top:0;overflow:hidden;">
+  </iframe>
+</div>
+
 ## System Overview 
 
 <p align="center">
