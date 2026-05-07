@@ -3,11 +3,6 @@
 #include "fsl_clock.h"
 
 #define PROTO_RX_BUF_SIZE 128U
-// KL46Z UART1/UART2 has no fractional baud divider (no BRFA), and the bus
-// clock (~10.486 MHz) doesn't divide cleanly into 115200 — the closest
-// integer SBRs both miss by >5%. 38400 is the highest standard rate that
-// fits with <1% error (10485760 / (16*17) = 38551, ~0.39% off). The HC-06
-// matches via AT+BAUD6.
 #define PROTO_BAUDRATE    38400U
 
 static volatile uint8_t  proto_rx_buf[PROTO_RX_BUF_SIZE];
@@ -19,7 +14,7 @@ void UART2_IRQHandler(void) {
 
     if (s1 & (UART_S1_RDRF_MASK | UART_S1_OR_MASK |
               UART_S1_NF_MASK   | UART_S1_FE_MASK | UART_S1_PF_MASK)) {
-        uint8_t c = UART2->D;                       // reading D clears flags
+        uint8_t c = UART2->D;                       
         if (s1 & UART_S1_RDRF_MASK) {
             uint16_t next = (uint16_t)((proto_rx_head + 1U) % PROTO_RX_BUF_SIZE);
             if (next != proto_rx_tail) {
@@ -43,9 +38,7 @@ void proto_init(void) {
     // 3. Disable TX/RX while reprogramming baud.
     UART2->C2 &= (uint8_t)~(UART_C2_TE_MASK | UART_C2_RE_MASK);
 
-    // 4. Baud: SBR = bus / (16 * baud), 13-bit integer divisor.
-    //    Bus = 10.485760 MHz, baud = 38400  ->  SBR = 17
-    //    Actual baud = 10485760 / (16 * 17) = 38551  (0.39% error)
+    // 4. Baud
     uint32_t bus_hz = CLOCK_GetBusClkFreq();
     uint32_t sbr    = (bus_hz + (8U * PROTO_BAUDRATE)) / (16U * PROTO_BAUDRATE);
     if (sbr == 0U) sbr = 1U;
@@ -55,10 +48,8 @@ void proto_init(void) {
                            | UART_BDH_SBR((uint8_t)(sbr >> 8)));
     UART2->BDL = (uint8_t)(sbr & 0xFFU);
 
-    // 5. 8-N-1, no parity (default C1 = 0 is correct).
     UART2->C1 = 0;
 
-    // 6. Reset ring buffer state.
     proto_rx_head = 0;
     proto_rx_tail = 0;
 

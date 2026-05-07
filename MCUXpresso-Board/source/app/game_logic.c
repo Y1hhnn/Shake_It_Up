@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "game_logic.h"
-#include "config.h"                 // wire_puts -> UART0 or UART2 per GAME_MODE
+#include "config.h"                
 
 static Beat    q[BEAT_QUEUE_CAP];
 static uint8_t q_head  = 0;
@@ -30,47 +30,26 @@ static int q_push(uint16_t idx, char dir, uint32_t t_ms) {
     return 1;
 }
 
+// H:<idx>:<grade>:<actual_ms>  -- final hit grade (P/G/M).
 static void emit_hit(uint16_t idx, char grade, uint32_t t) {
-    /* ============================================================
-     *  H:<idx>:<grade>:<actual_ms>
-     *  Final game determination -- Perfect / Good / Miss for a
-     *  swing that landed within MISS_WINDOW_MS of the queue head.
-     *  Required by host's parse_v2_line to score hits.
-     *  >>> Uncomment to enable. <<<
-     * ============================================================ */
-    // char buf[40];
-    // snprintf(buf, sizeof(buf), "H:%u:%c:%lu\n",
-    //          (unsigned)idx, grade, (unsigned long)t);
-    // wire_puts(buf);
-    (void)idx; (void)grade; (void)t;        // silence unused-arg warnings
+    char buf[40];
+    snprintf(buf, sizeof(buf), "H:%u:%c:%lu\n",
+             (unsigned)idx, grade, (unsigned long)t);
+    wire_puts(buf);
 }
 
+// M:<idx>  -- auto-miss: queued beat expired with no swing.
 static void emit_miss(uint16_t idx) {
-    /* ============================================================
-     *  M:<idx>
-     *  Auto-miss: a queued beat expired (now > t_ms + MISS_WINDOW)
-     *  with no swing arriving in time.
-     *  Required by host to know which beats timed out.
-     *  >>> Uncomment to enable. <<<
-     * ============================================================ */
-    // char buf[24];
-    // snprintf(buf, sizeof(buf), "M:%u\n", (unsigned)idx);
-    // wire_puts(buf);
-    (void)idx;
+    char buf[24];
+    snprintf(buf, sizeof(buf), "M:%u\n", (unsigned)idx);
+    wire_puts(buf);
 }
 
+// BUSY:<idx>  -- queue was full; host's beat was dropped.
 static void emit_busy(uint16_t idx) {
-    /* ============================================================
-     *  BUSY:<idx>
-     *  Queue is full; host's beat with this idx was dropped.
-     *  Diagnostic; safe to leave disabled if you trust your
-     *  scheduler to respect BEAT_QUEUE_CAP.
-     *  >>> Uncomment to enable. <<<
-     * ============================================================ */
-    // char buf[24];
-    // snprintf(buf, sizeof(buf), "BUSY:%u\n", (unsigned)idx);
-    // wire_puts(buf);
-    (void)idx;
+    char buf[24];
+    snprintf(buf, sizeof(buf), "BUSY:%u\n", (unsigned)idx);
+    wire_puts(buf);
 }
 
 void GL_Init(void) {
@@ -87,11 +66,11 @@ int GL_EnqueueBeat(uint16_t idx, char dir, uint32_t t_ms) {
 }
 
 void GL_OnSwing(uint32_t now, char detected_dir) {
-    if (q_count == 0) return;                       // stray: queue empty
+    if (q_count == 0) return;                     
 
     Beat *h = q_peek_head();
 
-    // Stray-early: head's window has not opened yet.
+    // Head's window has not opened yet.
     if (h->t_ms > now && (h->t_ms - now) > GOOD_WINDOW_MS) {
         return;
     }
@@ -108,7 +87,6 @@ void GL_OnSwing(uint32_t now, char detected_dir) {
     } else if (dt <= MISS_WINDOW_MS) {
         grade = 'M';                                // correct dir but too late
     } else {
-        // Past MISS_WINDOW; let GL_Tick auto-miss this one.
         return;
     }
 
@@ -119,7 +97,7 @@ void GL_OnSwing(uint32_t now, char detected_dir) {
 void GL_Tick(uint32_t now) {
     while (q_count > 0) {
         Beat *h = q_peek_head();
-        // Expired only if now is strictly past head time + miss window.
+        // Expired only if past head time + miss window.
         if (now <= h->t_ms + MISS_WINDOW_MS) break;
         emit_miss(h->idx);
         q_pop_head();

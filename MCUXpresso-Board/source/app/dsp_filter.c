@@ -1,8 +1,3 @@
-/**
- * @file dsp_filter.c
- * @brief Accelerometer DSP logic for swing detection and direction classification.
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "drivers/uart_comm.h"

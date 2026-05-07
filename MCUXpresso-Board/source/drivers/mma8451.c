@@ -1,8 +1,3 @@
-/**
- * @file mma8451.c
- * @brief MMA8451Q Accelerometer Driver Implementation
- */
-
 #include "mma8451.h"
 #include "fsl_i2c.h"
 #include "fsl_port.h"
