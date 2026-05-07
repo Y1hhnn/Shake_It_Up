@@ -1,4 +1,4 @@
-# ECE3140 Final Project for Felicia(ff267) & Yihan (yz2788)!
+# ECE3140 Final Project for Felicia (ff267) & Yihan (yz2788)!
 
 # 💃🕺🪩 Shake It Up! 🪩🕺💃
 
@@ -83,5 +83,5 @@ On the computer side, a Python program reads the incoming serial data and synchr
 
 The initial planning and system architecture were completed collaboratively by both of us. While Yihan focused on developing the DSP filtering, MMA8451 driver, and the Python GUI, Felicia focused on the hardware connections, game logic firmware, and the Bluetooth HC-06 integration, we helped modify each other’s code and setup whenever one encountered a problem. We met frequently to debug and test the human interaction elements together. Each of us has a solid understanding of every aspect of the project and contributed an equal amount of work to the final system.
 
-## AI Usag
+## AI Usage
 We utilized Generative AI to produce our visual assets. This included generating the game background, the directional arrows (up.png, down.png, left.png, right.png), and the real-time performance signals (perfect.png, good.png, miss.png) used for user feedback.
