@@ -143,27 +143,33 @@ The renderer draws falling arrows that descend from the spawn line to the judgme
 
 ## Testing 
 
-We built a Jupyter notebook (`Python-PC/demo.ipynb`) with isolated cells for each protocol layer and used it as a smoke-test suite during firmware bring-up.
+We tested each layer in isolation before integrating, then ran end-to-end play sessions to catch issues that only appear under real timing pressure. Two notebooks added alongside the host code: `Python-PC/demo.ipynb` is the earlier sandbox we used during firmware bring-up to exercise the protocol and tune the DSP cell-by-cell, and `Python-PC/test.ipynb` has the qualitative smoke checks plus the small quantitative measurements that fed our threshold tuning.
 
 ### Accelerometer and Gesture Recognition
-* Printed live `RAW:x:y:z` over UART and verified the resting gravity vector + dynamic component matched expectation when the board was tilted.
-* Waved the board in each of U/D/L/R and confirmed the EMA-removed dynamic component had clearly distinguishable signs on X and Y.
-* Adjusted the threshold values in the C code so intentional waves were detected, while small hand tremors and idle noise were ignored.
-* Fine-tuned the gesture detection logic by adding a cooldown, so one wave would be counted as one input instead of multiple rapid triggers.
+* Verified the accelerometer's raw output by printing live X/Y/Z over the link and checking that the resting gravity vector pointed in the expected direction across orientations, with proportional response on the matching axis under small tilts.
+* Validated the gravity-removal filter: tilting the board slowly kept the dynamic component near zero, while sharp waves spiked it cleanly. Confirmed the static and dynamic parts were being separated correctly.
+* Ran a structured 20-prompt gesture trial (five of each direction in randomized order) and consistently saw around 16 of 20 classified correctly across all four directions; most errors were ambiguous diagonal motions that the X-vs-Y ratio cutoff rejects on purpose.
+* Tuned the start- and release-magnitude thresholds against that trial so intentional waves register reliably; with the chosen values, leaving the board still on the desk for 60 s produces zero spurious detections.
+* Added a cooldown after each detection so a single deliberate wave produces exactly one direction event, then verified that genuine fast back-to-back swings still both register.
+* Repeated the trial with multiple players whose grip and motion energy differed, and re-tuned slightly toward the lower-energy end so the gentler player wasn't penalized.
 
 ### Bluetooth Communication and Signal Stability
-* Checked that the HC-06 Bluetooth module could pair with the PC and create a stable wireless connection.
-* Used demo.ipynb to test whether Up, Down, Left, and Right gestures could be received correctly over Bluetooth.
-* Tested the Bluetooth range to make sure normal player movement would not cause disconnection.
-* Monitored the Python serial output to see if Bluetooth introduced noticeable latency compared to wired UART.
+* Confirmed the Bluetooth module paired cleanly with the laptop and produced a stable virtual serial port that survives disconnect/reconnect cycles without rebooting either device.
+* Matched the module's baud rate to the firmware build and verified each setting yields uncorrupted message exchange.
+* Measured round-trip latency with 30 SYN/ACK pings on each transport: USB-OpenSDA averages a few milliseconds with maxes around 8 ms, while Bluetooth averages roughly 25–50 ms with occasional 80 ms outliers — both well inside the timing-window budget.
+* Watched the periodic clock-sync's smoothed offset over 60 seconds: the raw KL46Z internal RC reference drifts at roughly 5000 ppm, but the 5-second re-ping cadence keeps the smoothed estimate within a few milliseconds across an entire song.
+* Verified the host opens the port without inadvertently resetting the board。
+* Tested wireless range by walking around the room mid-song; the link stays connected through normal player movement.
 
 ### Python and GUI: Interaction and Synchronization
 * Played the demo song end-to-end and confirmed each falling arrow lined up with its perfect time on the judgment line.
-* Verified that the arrow images, including up.png, down.png, left.png, and right.png, loaded and appeared in the correct screen positions.
-* Checked that the feedback images, including perfect.png, good.png, and miss.png, displayed correctly based on player timing.
-* Tested perfect, good, and miss cases to make sure the score and combo updated in real time.
-* Confirmed that the final score and max combo were displayed correctly when the game ended.
-* Checked that the board movement and screen animation stayed synchronized without noticeable delay.
+* Cross-checked timing-judgment consistency by scheduling a single beat with a 3-second countdown, swinging at varying offsets, and confirming the board's reported P/G/M always matched the measured |actual − target| against the 500 / 1000 / 1500 ms thresholds.
+* Verified the directional arrow images loaded into their correct screen lanes and the Perfect / Good / Miss feedback images displayed centered above the play area.
+* Tested all three grade outcomes by deliberately swinging on time, slightly off, and not at all. The score, combo, and per-grade tallies updated instantly and matched what the board reported.
+* Checked that the end-screen score, max combo, accuracy percentage, and rank letter (S/A/B/C/D by accuracy) reflected the actual play.
+* Verified the replay flow by finishing a song, restarting it, and confirming all per-song state (score, combo, consumed arrows, falling lane) reset cleanly.
+* Tested edge behaviors: very early swings before the next beat is in range are ignored without penalty; late swings inside the miss window register as Miss; beats whose deadline passes without a swing auto-miss with no further input.
+* Confirmed graded arrows disappear from the falling lane the same frame their result arrives, and ran several full songs in succession to surface any slow-burning issues.
 
 ## Resources
 [Music Link Here](https://open.spotify.com/track/0vor7b1zPli7ROBMPPZzTp?si=14eb88aada3d448c)
@@ -174,5 +180,7 @@ The initial planning and system architecture were completed collaboratively. Yih
 
 ## AI Usage
 We utilized GPT-5 to produce our visual assets. This included generating the game background, the directional arrows (up.png, down.png, left.png, right.png), and the real-time performance signals (perfect.png, good.png, miss.png) used for user feedback.
+
 Gemini helped us to understand the pygame, game UI and audio player parts of the code. 
+
 No line of code was written by Generative AI.
