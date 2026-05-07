@@ -31,6 +31,8 @@ Python-PC/             pygame host
   ui_renderer.py       pygame screen: arrows, judgment line, end screen
   config.py            paths, ports, timing windows (mirrors firmware)
   assets/              PNGs, song1.mp3, song1.json
+  demo.ipynb           bring-up sandbox: cell-by-cell protocol + DSP exercises
+  test.ipynb           consolidated test suite: latency, drift, false-trigger, accuracy, timing
 ```
 
 ## Wire protocol (board <-> host)
@@ -51,18 +53,19 @@ Beats are scheduled in *board time*; `PeriodicSync` issues SYN every 5 s and EMA
 
 Set in [`MCUXpresso-Board/source/app/config.h`](MCUXpresso-Board/source/app/config.h):
 
-| `BUILD_MODE` | Game wire | HC-06 baud |
+| `BUILD_MODE` | Game wire | HC-06 baud | When to use |
 |---|---|---|---|
-| `MODE_DEBUG` | UART2 (J3[7]/J3[9]) @ 38400 | `AT+BAUD6` | 
-| `MODE_USB` | UART0 (USB-OpenSDA) @ 115200 | 
-| `MODE_BT` | UART0 (J1[2]/J1[4]) @ 115200 | `AT+BAUD8` | 
+| `MODE_DEBUG` | UART2 (J3[7]/J3[9]) @ 38400 | `AT+BAUD6` | Bring-up — both buses live |
+| `MODE_USB`   | UART0 (USB-OpenSDA) @ 115200 | n/a | Fastest dev iteration, no HC-06 |
+| `MODE_BT`    | UART0 (J1[2]/J1[4]) @ 115200 | `AT+BAUD8` | Untethered demo over Bluetooth |
 
 `MODE_USB` and `MODE_BT` produce the same binary; the boot banner (`MODE:USB...` / `MODE:BT...`) is the only difference.
 
 ## Build and flash the firmware
 
 1. Open `MCUXpresso-Board/` as a project in MCUXpressoIDE.
-2. **Project → Build** (⌘B).
+2. (Optional) edit `source/app/config.h` to choose `BUILD_MODE` (default `MODE_USB`).
+3. **Project → Build** (⌘B), then **Run** (or **Debug** then terminate) to flash via OpenSDA.
 
 ## Run the host
 
@@ -76,4 +79,4 @@ python3 main.py
 Controls: **SPACE** start / replay, **ESC** quit, **F11** toggle fullscreen. Swing the board on each falling arrow as it crosses the judgment line. Per-beat results print to the terminal; the end screen shows score, max combo, accuracy, and a letter rank.
 
 ## Timing windows
-Current values: `PERFECT=500ms`, `GOOD=1000ms`, `MISS=1500ms` (correct dir but late = `M`, no swing in window = `TIMEOUT`).
+Current values: `PERFECT=500ms`, `GOOD=1000ms`, `MISS=1500ms` (correct dir but late = `M`, no swing in window = `TIMEOUT`). 
