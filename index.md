@@ -163,10 +163,10 @@ We tested each layer in isolation before integrating, then ran end-to-end play s
 
 ### Python and GUI: Interaction and Synchronization
 * Played the demo song end-to-end and confirmed each falling arrow lined up with its perfect time on the judgment line.
-* Cross-checked timing-judgment consistency by scheduling a single beat with a 3-second countdown, swinging at varying offsets, and confirming the board's reported P/G/M always matched the measured |actual − target| against the 500 / 1000 / 1500 ms thresholds.
-* Verified the directional arrow images loaded into their correct screen lanes and the Perfect / Good / Miss feedback images displayed centered above the play area.
+* Cross-checked timing-judgment consistency by scheduling a single beat with a 3-second countdown, swinging at varying offsets, and confirming the board's reported P,G,M always matched the measured `|actual − target|` against the 500, 1000, 1500 ms thresholds.
+* Verified the directional arrow images loaded into their correct screen lanes and the Perfect, Good, Miss feedback images displayed centered above the play area.
 * Tested all three grade outcomes by deliberately swinging on time, slightly off, and not at all. The score, combo, and per-grade tallies updated instantly and matched what the board reported.
-* Checked that the end-screen score, max combo, accuracy percentage, and rank letter (S/A/B/C/D by accuracy) reflected the actual play.
+* Checked that the end-screen score, max combo, accuracy percentage, and rank letter (S,A,B,C,D by accuracy) reflected the actual play.
 * Verified the replay flow by finishing a song, restarting it, and confirming all per-song state (score, combo, consumed arrows, falling lane) reset cleanly.
 * Tested edge behaviors: very early swings before the next beat is in range are ignored without penalty; late swings inside the miss window register as Miss; beats whose deadline passes without a swing auto-miss with no further input.
 * Confirmed graded arrows disappear from the falling lane the same frame their result arrives, and ran several full songs in succession to surface any slow-burning issues.
@@ -176,7 +176,7 @@ We tested each layer in isolation before integrating, then ran end-to-end play s
 
 ## Work Distribution
 
-The initial planning and system architecture were completed collaboratively. Yihan focused on the DSP filtering, MMA8451 driver, the host serial / clock-sync layer, and the Python GUI. Felicia focused on the hardware wiring, game-logic firmware (queue + judging), and Bluetooth HC-06 integration. We helped modify each other's code and bring-up whenever one of us hit a problem, and met frequently to debug and tune the human-facing pieces (timing windows, DSP thresholds, dispatch lead) together. Both of us have a working understanding of every part of the project and contributed an equal amount of work to the final system.
+The initial planning and system architecture were completed collaboratively. Yihan focused on the DSP filtering, MMA8451 driver, the host serial & clock-sync layer, and the Python GUI. Felicia focused on the hardware wiring, game-logic firmware (queue + judging), and Bluetooth HC-06 integration. We helped modify each other's code and bring-up whenever one of us hit a problem, and met frequently to debug and tune the human-facing pieces (timing windows, DSP thresholds, dispatch lead) together. Both of us have a working understanding of every part of the project and contributed an equal amount of work to the final system.
 
 ## AI Usage
 We utilized GPT-5 to produce our visual assets. This included generating the game background, the directional arrows (up.png, down.png, left.png, right.png), and the real-time performance signals (perfect.png, good.png, miss.png) used for user feedback.
