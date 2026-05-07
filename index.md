@@ -1,4 +1,4 @@
-# ECE3140 page for ff267 yz2788!
+# ECE3140 Final Project for Felicia(ff267) & Yihan (yz2788)!
 
 # 💃🕺🪩 Shake It Up! 🪩🕺💃
 
@@ -22,6 +22,8 @@ Our project implements a rhythm-based interactive game called “Shake It Up!”
     style="width:100%;height:100%;position:absolute;left:0;top:0;overflow:hidden;">
   </iframe>
 </div>
+
+<br><br>
 
 ## System Overview 
 
