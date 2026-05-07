@@ -60,10 +60,10 @@ On the computer side, a Python program reads the incoming serial data and synchr
 * Fine-tune the gesture detection logic to ensure a single wave is recognized as one distinct input instead of multiple rapid triggers.
 
 ### Bluetooth Communication and Signal Stability
-* Verify successful pairing between the HC-06 Bluetooth module and the PC to establish a stable wireless data link.
-* Use the demo.ipynb environment to specifically test if "Up, Down, Left, Right" motions performed on the board are accurately captured over the Bluetooth connection.
-* Test the effective range of the Bluetooth signal to ensure player movements do not cause data packets to drop during active gameplay.
-* Monitor serial output on the Python side to evaluate any latency introduced by the wireless transmission compared to a wired UART connection.
+* Checked that the HC-06 Bluetooth module could pair with the PC and create a stable wireless connection.
+* Used demo.ipynb to test whether Up, Down, Left, and Right gestures could be received correctly over Bluetooth.
+* Tested the Bluetooth range to make sure normal player movement would not cause disconnection.
+* Monitored the Python serial output to see if Bluetooth introduced noticeable latency compared to wired UART.
 
 ### Python and GUI: Interaction and Synchronization
 * Test the game's responsiveness by letting Python generate random directional signals (Up, Down, Left, Right) and manually performing the corresponding movements to check for sync.
