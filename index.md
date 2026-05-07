@@ -54,10 +54,10 @@ On the computer side, a Python program reads the incoming serial data and synchr
 ## Testing 
 
 ### Accelerometer and Gesture Recognition
-* Print out raw X, Y, and Z acceleration values from the MMA8451Q sensor to the console to ensure data is being read correctly.
-* Test manual interaction by waving the board in four directions (Up, Down, Left, Right) to verify if the movements are distinguishable.
-* Adjust threshold parameters in the C code so that intentional waves are recognized while minor hand tremors or idle noise are filtered out.
-* Fine-tune the gesture detection logic to ensure a single wave is recognized as one distinct input instead of multiple rapid triggers.
+* Printed the raw X, Y, and Z acceleration values from the MMA8451Q sensor to make sure the board was reading data correctly.
+* Waved the board manually in four directions: Up, Down, Left, and Right, to check if each motion produced distinguishable sensor values.
+* Adjusted the threshold values in the C code so intentional waves were detected, while small hand tremors and idle noise were ignored.
+* Fine-tuned the gesture detection logic by adding a cooldown, so one wave would be counted as one input instead of multiple rapid triggers.
 
 ### Bluetooth Communication and Signal Stability
 * Checked that the HC-06 Bluetooth module could pair with the PC and create a stable wireless connection.
@@ -66,10 +66,13 @@ On the computer side, a Python program reads the incoming serial data and synchr
 * Monitored the Python serial output to see if Bluetooth introduced noticeable latency compared to wired UART.
 
 ### Python and GUI: Interaction and Synchronization
-* Test the game's responsiveness by letting Python generate random directional signals (Up, Down, Left, Right) and manually performing the corresponding movements to check for sync.
-* Verify that the game's visual assets (up.png, down.png, left.png, right.png) and feedback sprites (perfect.png, good.png, miss.png) are loaded and displayed in the correct positions.
-* Test different gameplay scenarios (perfect, good, and miss) to ensure the score updates in real-time and the "Final Score" and "Max Combo" are displayed accurately upon exiting.
-* Confirm that the movement on the board and the animation on the screen are synchronized without noticeable latency, providing a smooth experience.
+* Let Python generate random directional prompts and manually performed the matching board movements to test responsiveness.
+* Verified that the arrow images, including up.png, down.png, left.png, and right.png, loaded and appeared in the correct screen positions.
+* Checked that the feedback images, including perfect.png, good.png, and miss.png, displayed correctly based on player timing.
+* Tested perfect, good, and miss cases to make sure the score and combo updated in real time.
+* Confirmed that the final score and max combo were displayed correctly when the game ended.
+* Checked that the board movement and screen animation stayed synchronized without noticeable delay.
+
 
 
 ## Resources
