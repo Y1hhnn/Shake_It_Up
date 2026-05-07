@@ -51,11 +51,11 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-MCUXpresso-Board/board
-MCUXpresso-Board/CMSIS
-MCUXpresso-Board/Debug
-MCUXpresso-Board/doc
-MCUXpresso-Board/drivers
-MCUXpresso-Board/startup
-MCUXpresso-Board/utilities
+# MCUXpresso-Board/board
+# MCUXpresso-Board/CMSIS
+# MCUXpresso-Board/Debug
+# MCUXpresso-Board/doc
+# MCUXpresso-Board/drivers
+# MCUXpresso-Board/startup
+# MCUXpresso-Board/utilities
 
