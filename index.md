@@ -71,6 +71,12 @@ Standard FRDM-KL46Z with on-board MMA8451Q accelerometer (I2C0, 800 Hz ODR). For
 </p>
 
 * **Game logic:** a 16-slot beat queue. The host enqueues beats a few seconds before their perfect time to the board. Swings are graded against the head of the queue; wrong-direction or late swings consume that head, and beats whose deadline passes are auto-missed. Every result — Perfect, Good, Miss, or auto-miss timeout — is reported back to the host as a single line of text. We intentionally put judging on the board rather than on the PC: serial or Bluetooth latency only delays when feedback appears on screen, not the actual grade, so a slow link doesn't penalize the player.
+
+<p align="center">
+    <img src="assets/game_logic.png" ><br>
+    <em>Figure 4: Game Logic Diagram</em>
+</p>
+
 * **Build modes:** three compile-time modes select where the game protocol travels:
 
 | Mode | UART use | When to use |
@@ -104,10 +110,16 @@ A periodic clock-sync thread issues a SYN every five seconds, parses the ACK, an
 
 <p align="center">
     <img src="assets/clock-sync.png" ><br>
-    <em>Figure 4: Clock Synchronization Structure</em>
+    <em>Figure 5: Clock Synchronization Structure</em>
 </p>
 
 The renderer draws falling arrows that descend from the spawn line to the judgment line over a fixed travel time, plus the live HUD and the end-screen rank. An arrow disappears from the lane the moment the matching grade or timeout event arrives.
+
+<p align="center">
+    <img src="assets/game_snippet.png" ><br>
+    <em>Figure 6: Game Snippet</em>
+</p>
+
 
 ### Beatmap
 
@@ -162,7 +174,5 @@ The initial planning and system architecture were completed collaboratively. Yih
 
 ## AI Usage
 We utilized GPT-5 to produce our visual assets. This included generating the game background, the directional arrows (up.png, down.png, left.png, right.png), and the real-time performance signals (perfect.png, good.png, miss.png) used for user feedback.
-
 Gemini helped us to understand the pygame, game UI and audio player parts of the code. 
-
 No line of code was written by Generative AI.
