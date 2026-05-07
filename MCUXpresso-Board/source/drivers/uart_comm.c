@@ -13,8 +13,6 @@ static volatile uint16_t uart_rx_tail = 0;
 
 void UART0_IRQHandler(void) {
     uint8_t s1 = UART0->S1;
-
-    // Reading D clears RDRF and any of OR/NF/FE/PE that were set with this byte.
     if (s1 & (UART_S1_RDRF_MASK | UART_S1_OR_MASK |
               UART_S1_NF_MASK   | UART_S1_FE_MASK | UART_S1_PF_MASK)) {
         uint8_t c = UART0->D;
@@ -24,7 +22,6 @@ void UART0_IRQHandler(void) {
                 uart_rx_buf[uart_rx_head] = c;
                 uart_rx_head = next;
             }
-            // Ring buffer full -> byte dropped.
         }
     }
 }
