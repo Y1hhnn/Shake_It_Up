@@ -82,7 +82,7 @@ Standard FRDM-KL46Z with on-board MMA8451Q accelerometer (I2C0, 800 Hz ODR). For
 | Mode | UART use | When to use |
 |---|---|---|
 | *Debug* | USB + HC-06 | For development of bluetooth, both buses lives |
-| *USB*   | USB only                    | For development other than bluetooth, no HC-06 needed |
+| *USB*   | USB only                    | For development other than bluetooth |
 | *BT*    | HC-06 only                      | Real Game |
 
 ### Wire protocol (board ↔ host)
