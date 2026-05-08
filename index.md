@@ -81,14 +81,11 @@ Standard FRDM-KL46Z with on-board MMA8451Q accelerometer (I2C0, 800 Hz ODR). For
 
 | Mode | UART use | When to use |
 |---|---|---|
-| *Debug* | USB diagnostics + Bluetooth game | Bring-up / debugging — both buses live |
-| *USB*   | USB-CDC only                    | Fastest dev iteration, no HC-06 needed |
-| *BT*    | HC-06 only                      | Untethered demo, game travels over Bluetooth |
+| *Debug* | USB + HC-06 | For development of bluetooth, both buses lives |
+| *USB*   | USB only                    | For development other than bluetooth, no HC-06 needed |
+| *BT*    | HC-06 only                      | Real Game |
 
 ### Wire protocol (board ↔ host)
-
-Line-based ASCII, every message ≤ ~25 bytes:
-
 
 | Direction | Message | Purpose |
 |---|---|---|
@@ -143,33 +140,27 @@ The renderer draws falling arrows that descend from the spawn line to the judgme
 
 ## Testing 
 
-We tested each layer in isolation before integrating, then ran end-to-end play sessions to catch issues that only appear under real timing pressure. Two notebooks added alongside the host code: `Python-PC/demo.ipynb` is the earlier sandbox we used during firmware bring-up to exercise the protocol and tune the DSP cell-by-cell, and `Python-PC/test.ipynb` has the qualitative smoke checks plus the small quantitative measurements that fed our threshold tuning.
+We tested the system layer by layer before running full end-to-end play sessions. Two notebooks supported this process: `Python-PC/demo.ipynb` was used during firmware bring-up to exercise the protocol and tune DSP behavior, while `Python-PC/test.ipynb` collected the qualitative checks and small quantitative measurements used for threshold tuning.
 
 ### Accelerometer and Gesture Recognition
-* Verified the accelerometer's raw output by printing live X/Y/Z over the link and checking that the resting gravity vector pointed in the expected direction across orientations, with proportional response on the matching axis under small tilts.
-* Validated the gravity-removal filter: tilting the board slowly kept the dynamic component near zero, while sharp waves spiked it cleanly. Confirmed the static and dynamic parts were being separated correctly.
-* Ran a structured 20-prompt gesture trial (five of each direction in randomized order) and consistently saw around 16 of 20 classified correctly across all four directions; most errors were ambiguous diagonal motions that the X-vs-Y ratio cutoff rejects on purpose.
-* Tuned the start- and release-magnitude thresholds against that trial so intentional waves register reliably; with the chosen values, leaving the board still on the desk for 60 s produces zero spurious detections.
-* Added a cooldown after each detection so a single deliberate wave produces exactly one direction event, then verified that genuine fast back-to-back swings still both register.
-* Repeated the trial with multiple players whose grip and motion energy differed, and re-tuned slightly toward the lower-energy end so the gentler player wasn't penalized.
+* Verified raw X/Y/Z accelerometer readings across board orientations and small tilts to confirm the gravity vector and axis responses were correct.
+* Tested the EMA gravity-removal filter: slow tilts stayed near zero in the dynamic signal, while sharp swings produced clear spikes.
+* Ran structured gesture trials with randomized Up / Down / Left / Right prompts. A typical 20-prompt run classified about 16 correctly; most errors came from ambiguous diagonal motions, which the ratio cutoff intentionally rejects.
+* Tuned the start/release thresholds and cooldown so intentional swings register once, gentle players are still detected, and the board produces zero false swings when left still for 60 seconds.
 
 ### Bluetooth Communication and Signal Stability
-* Confirmed the Bluetooth module paired cleanly with the laptop and produced a stable virtual serial port that survives disconnect/reconnect cycles without rebooting either device.
-* Matched the module's baud rate to the firmware build and verified each setting yields uncorrupted message exchange.
-* Measured round-trip latency with 30 SYN/ACK pings on each transport: USB-OpenSDA averages a few milliseconds with maxes around 8 ms, while Bluetooth averages roughly 25–50 ms with occasional 80 ms outliers — both well inside the timing-window budget.
-* Watched the periodic clock-sync's smoothed offset over 60 seconds: the raw KL46Z internal RC reference drifts at roughly 5000 ppm, but the 5-second re-ping cadence keeps the smoothed estimate within a few milliseconds across an entire song.
-* Verified the host opens the port without inadvertently resetting the board。
-* Tested wireless range by walking around the room mid-song; the link stays connected through normal player movement.
+* Confirmed the HC-06 paired with the laptop, created a stable virtual serial port, and recovered cleanly after disconnect/reconnect cycles.
+* Matched the HC-06 baud rate to the firmware build and verified uncorrupted message exchange over both USB and Bluetooth.
+* Measured 30 SYN/ACK round trips per transport: USB averaged a few milliseconds, while Bluetooth stayed around 25–50 ms with occasional larger outliers, still within our timing-window budget.
+* Monitored the 5-second clock-sync loop over 60 seconds and verified that EMA smoothing kept the host↔board offset within a few milliseconds during gameplay.
+* Tested wireless range by moving around the room mid-song; the connection stayed stable under normal player movement.
 
 ### Python and GUI: Interaction and Synchronization
-* Played the demo song end-to-end and confirmed each falling arrow lined up with its perfect time on the judgment line.
-* Cross-checked timing-judgment consistency by scheduling a single beat with a 3-second countdown, swinging at varying offsets, and confirming the board's reported P,G,M always matched the measured $\abs{actual − target}$ against the 500, 1000, 1500 ms thresholds.
-* Verified the directional arrow images loaded into their correct screen lanes and the Perfect, Good, Miss feedback images displayed centered above the play area.
-* Tested all three grade outcomes by deliberately swinging on time, slightly off, and not at all. The score, combo, and per-grade tallies updated instantly and matched what the board reported.
-* Checked that the end-screen score, max combo, accuracy percentage, and rank letter (S,A,B,C,D by accuracy) reflected the actual play.
-* Verified the replay flow by finishing a song, restarting it, and confirming all per-song state (score, combo, consumed arrows, falling lane) reset cleanly.
-* Tested edge behaviors: very early swings before the next beat is in range are ignored without penalty; late swings inside the miss window register as Miss; beats whose deadline passes without a swing auto-miss with no further input.
-* Confirmed graded arrows disappear from the falling lane the same frame their result arrives, and ran several full songs in succession to surface any slow-burning issues.
+* Played the demo song end-to-end and confirmed falling arrows reached the judgment line at their intended beat times.
+* Scheduled single-beat tests with a countdown and checked that the board's Perfect / Good / Miss reports matched the configured timing thresholds.
+* Verified that arrow lanes, feedback images, score, combo, grade counts, final accuracy, and rank updated correctly from board events.
+* Tested replay behavior and confirmed all per-song state reset cleanly after restarting.
+* Checked edge cases: early swings are ignored, late swings become Miss, timeout beats auto-miss, and graded arrows disappear as soon as their result arrives.
 
 ## Resources
 [Music Link Here](https://open.spotify.com/track/0vor7b1zPli7ROBMPPZzTp?si=14eb88aada3d448c)
