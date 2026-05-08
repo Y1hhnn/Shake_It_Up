@@ -31,8 +31,8 @@ Python-PC/             pygame host
   ui_renderer.py       pygame screen: arrows, judgment line, end screen
   config.py            paths, ports, timing windows (mirrors firmware)
   assets/              PNGs, song1.mp3, song1.json
-  demo.ipynb           bring-up sandbox: cell-by-cell protocol + DSP exercises
-  test.ipynb           consolidated test suite: latency, drift, false-trigger, accuracy, timing
+  demo.ipynb           Game Sandbox
+  test.ipynb           Test suite: latency, drift, false-trigger, accuracy, timing
 ```
 
 ## Wire protocol (board <-> host)
@@ -53,13 +53,12 @@ Beats are scheduled in *board time*; `PeriodicSync` issues SYN every 5 s and EMA
 
 Set in [`MCUXpresso-Board/source/app/config.h`](MCUXpresso-Board/source/app/config.h):
 
-| `BUILD_MODE` | Game wire | HC-06 baud | When to use |
+| `BUILD_MODE` | Game wire | When to use |
 |---|---|---|---|
-| `MODE_DEBUG` | UART2 (J3[7]/J3[9]) @ 38400 | `AT+BAUD6` | Bring-up — both buses live |
-| `MODE_USB`   | UART0 (USB-OpenSDA) @ 115200 | n/a | Fastest dev iteration, no HC-06 |
-| `MODE_BT`    | UART0 (J1[2]/J1[4]) @ 115200 | `AT+BAUD8` | Untethered demo over Bluetooth |
+| `MODE_DEBUG` | UART2 (J3[7]/J3[9]) | For development of bluetooth, both buses lives|
+| `MODE_USB`   | UART0 (USB-OpenSDA) | For development other than bluetooth |
+| `MODE_BT`    | UART0 (J1[2]/J1[4]) | Real Game Play |
 
-`MODE_USB` and `MODE_BT` produce the same binary; the boot banner (`MODE:USB...` / `MODE:BT...`) is the only difference.
 
 ## Build and flash the firmware
 
